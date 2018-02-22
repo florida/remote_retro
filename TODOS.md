@@ -1,0 +1,3 @@
+- Refactor helpers
+- Setup selector for currentUserThat includes the associated user attributes
+- Refactor presences to workByTokenRatherThanAsAList

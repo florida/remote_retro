@@ -18,9 +18,13 @@ describe("presences reducer", () => {
     const presences = [{
       token: "abc",
       online_at: 2,
+      id: 3,
+      nonSenseAttributeThatShouldNotAppear: "Herp",
     }, {
       token: "123",
       online_at: 1,
+      id: 5,
+      nonSenseAttributeThatShouldNotAppear: "McDerp",
     }]
 
     deepFreeze(presences)
@@ -30,8 +34,28 @@ describe("presences reducer", () => {
 
       it("adds presences in the action to state", () => {
         const newState = presencesReducer([], action)
-        const tokens = newState.map(presences => presences.token)
+        const tokens = newState.map(presence => presence.token)
         expect(tokens).to.deep.equal(["abc", "123"])
+      })
+
+      it("maps the id attribute of the given presences to a user_id attribute", () => {
+        const newState = presencesReducer([], action)
+        const userIds = newState.map(presence => presence.user_id)
+        expect(userIds).to.deep.equal([3, 5])
+      })
+
+      // remainder of attributes are persisted on the user model
+      // the attributes we keep are either a foreign key to the user_model or ephemeral presence attributes
+      it("excludes attributes other than user_id, token, online_at, and is_facilitator", () => {
+        const newState = presencesReducer([], action)
+        const examplePresence = newState[0]
+        const presenceAttributesSorted = Object.keys(examplePresence).sort()
+
+        expect(presenceAttributesSorted).to.deep.equal([
+          "online_at",
+          "token",
+          "user_id",
+        ])
       })
     })
 
@@ -49,8 +73,8 @@ describe("presences reducer", () => {
       context("when the user is not already tracked in the presences list", () => {
         const presenceDiff = {
           joins: {
-            ABC: { user: { name: "Kevin", online_at: 10, token: "ABC" } },
-            XYZ: { user: { name: "Sarah", online_at: 20, token: "XYZ" } },
+            ABC: { user: { id: 3, name: "Kevin", online_at: 10, token: "ABC" } },
+            XYZ: { user: { id: 7, name: "Sarah", online_at: 20, token: "XYZ" } },
           },
           leaves: {},
         }
@@ -60,8 +84,26 @@ describe("presences reducer", () => {
         const action = { type: "SYNC_PRESENCE_DIFF", presenceDiff }
 
         it("adds all of the presences to state", () => {
-          const names = presencesReducer([], action).map(presences => presences.name)
-          expect(names).to.eql(["Kevin", "Sarah"])
+          const tokens = presencesReducer([], action).map(presence => presence.token)
+          expect(tokens).to.eql(["ABC", "XYZ"])
+        })
+
+        it("maps the id attribute of the given presences to a user_id attribute", () => {
+          const newState = presencesReducer([], action)
+          const userIds = newState.map(presence => presence.user_id)
+          expect(userIds).to.deep.equal([3, 7])
+        })
+
+        it("excludes attributes other than user_id, token, online_at, and is_facilitator", () => {
+          const newState = presencesReducer([], action)
+          const examplePresence = newState[0]
+          const presenceAttributesSorted = Object.keys(examplePresence).sort()
+
+          expect(presenceAttributesSorted).to.deep.equal([
+            "online_at",
+            "token",
+            "user_id",
+          ])
         })
       })
 
@@ -79,11 +121,11 @@ describe("presences reducer", () => {
 
         it("does not add a duplicate to the presences list", () => {
           const presencessListAlreadyContainingUser = [{ token: "ABC", name: "Kevin", online_at: 10 }]
-          const names = presencesReducer(
+          const tokens = presencesReducer(
             presencessListAlreadyContainingUser,
             action
-          ).map(presences => presences.name)
-          expect(names).to.eql(["Kevin"])
+          ).map(presence => presence.token)
+          expect(tokens).to.eql(["ABC"])
         })
       })
     })

@@ -33,14 +33,24 @@ const removeDepartures = (presences, departures) => {
   return reject(presences, presence => departureTokens.includes(presence.token))
 }
 
+const normalizePresencesWithForeignKeyForUsers = (presences) => {
+  return presences.map(({ token, id, is_facilitator, online_at }) => ({
+    user_id: id,
+    online_at,
+    token,
+  }))
+}
+
 export const reducer = (state = [], action) => {
   switch (action.type) {
-    case "SET_PRESENCES":
-      return action.presences
+    case "SET_PRESENCES": {
+      return normalizePresencesWithForeignKeyForUsers(action.presences)
+    }
     case "SYNC_PRESENCE_DIFF": {
       const { presenceDiff: { joins, leaves } } = action
       const withArrivalsAdded = addArrivals(state, joins)
-      return removeDepartures(withArrivalsAdded, leaves)
+      const withDeparturesRemoved = removeDepartures(withArrivalsAdded, leaves)
+      return normalizePresencesWithForeignKeyForUsers(withDeparturesRemoved)
     }
     case "UPDATE_PRESENCE": {
       const { presenceToken, newAttributes } = action
