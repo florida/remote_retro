@@ -26,6 +26,37 @@ describe("selectors", () => {
       })
     })
   })
+
+  describe("getCurrentUserPresence", () => {
+    context("when the presence with the token on window exists in state", () => {
+      beforeEach(() => {
+        window.userToken = "hErOboy"
+      })
+
+      const state = {
+        presences: [{
+          user_id: 3,
+          token: "hErOboy",
+          online_at: 15,
+        }],
+        usersById: {
+          2: { id: 2, name: "Rue McClanahan" },
+          3: { id: 3, name: "Estelle Getty" },
+        },
+      }
+
+      const userId = 1
+
+      it("should merge the presence object--sans user_id--with the associated user attributes", () => {
+        expect(selectors.getCurrentUserPresence(state)).to.eql({
+          id: 3,
+          name: "Estelle Getty",
+          online_at: 15,
+          token: "hErOboy",
+        })
+      })
+    })
+  })
 })
 
 describe("usersById reducer", () => {

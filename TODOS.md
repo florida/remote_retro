@@ -1,3 +1,5 @@
 - Refactor helpers
 - Setup selector for currentUserThat includes the associated user attributes
+  - hot!
+- Setup getter for `userPresences`, so that we can interate through presences with the user's picture and so on, so that user.picture.replace isn't totally fucked
 - Refactor presences to workByTokenRatherThanAsAList

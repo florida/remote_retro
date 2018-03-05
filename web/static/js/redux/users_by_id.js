@@ -23,4 +23,10 @@ export const selectors = {
   getUserById: (state, userId) => {
     return state.usersById[userId]
   },
+  getCurrentUserPresence: ({ presences, usersById }) => {
+    if (presences.length === 0) return;
+    const { user_id, ...restOfPresenceAttrs } = presences.find(presence => presence.token === window.userToken)
+    const user = usersById[user_id] || {}
+    return { ...restOfPresenceAttrs, ...user }
+  },
 }
