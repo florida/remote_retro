@@ -27,6 +27,39 @@ describe("selectors", () => {
     })
   })
 
+  describe("getUserPresences", () => {
+    const state = {
+      presences: [{
+        online_at: 987,
+        is_typing: true,
+        user_id: 1,
+      }, {
+        online_at: 123,
+        is_typing: false,
+        user_id: 3,
+      }],
+      usersById: {
+        1: { id: 1, name: "Betty White" },
+        2: { id: 2, name: "Rue McClanahan" },
+        3: { id: 3, name: "Estelle Getty" },
+      },
+    }
+
+    it("should merge each presence object with the associated user, dropping the foreign key", () => {
+      expect(selectors.getUserPresences(state)).to.eql([{
+        id: 1,
+        online_at: 987,
+        is_typing: true,
+        name: "Betty White",
+      }, {
+        id: 3,
+        online_at: 123,
+        is_typing: false,
+        name: "Estelle Getty",
+      }])
+    })
+  })
+
   describe("getCurrentUserPresence", () => {
     context("when the presence with the token on window exists in state", () => {
       beforeEach(() => {

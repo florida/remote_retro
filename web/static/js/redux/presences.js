@@ -63,4 +63,6 @@ export const reducer = (state = [], action) => {
   }
 }
 
+export const selectors = {}
+
 export default reducer

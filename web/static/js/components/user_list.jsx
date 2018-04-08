@@ -4,6 +4,7 @@ import { connect } from "react-redux"
 import UserListItem from "./user_list_item"
 import * as AppPropTypes from "../prop_types"
 import styles from "./css_modules/user_list.css"
+import { selectors } from "../redux/users_by_id"
 
 export const UserList = ({ presences, facilitatorId }) => {
   if (presences.length === 0) { return null }
@@ -40,6 +41,11 @@ UserList.propTypes = {
   facilitatorId: AppPropTypes.facilitatorId.isRequired,
 }
 
-const mapStateToProps = ({ facilitatorId }) => ({ facilitatorId })
+const mapStateToProps = (state) => {
+  return {
+    presences: selectors.getUserPresences(state),
+    facilitatorId: state.facilitatorId,
+  }
+}
 
 export default connect(mapStateToProps)(UserList)
