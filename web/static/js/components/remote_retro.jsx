@@ -31,8 +31,6 @@ export class RemoteRetro extends Component {
       facilitatorName,
     } = this.props
 
-    if (!currentUser) { return null }
-
     return (
       <div className={stage}>
         <Room

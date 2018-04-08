@@ -23,19 +23,19 @@ export const selectors = {
   getUserById: (state, userId) => {
     return state.usersById[userId]
   },
-  getUserPresences: ({ presences, usersById }) => {
+  getUserPresences: ({ presences, usersById, facilitatorId }) => {
     return presences.map(presence => {
       const { user_id, ...restOfPresenceAttrs } = presence
+      const user = usersById[user_id]
       return {
-        ...usersById[user_id],
+        ...user,
         ...restOfPresenceAttrs,
+        is_facilitator: user.id === facilitatorId,
       }
     })
   },
-  getCurrentUserPresence: ({ presences, usersById }) => {
-    if (presences.length === 0) return;
-    const { user_id, ...restOfPresenceAttrs } = presences.find(presence => presence.token === window.userToken)
-    const user = usersById[user_id] || {}
-    return { ...restOfPresenceAttrs, ...user }
+  getCurrentUserPresence: (state) => {
+    const userPresences = selectors.getUserPresences(state)
+    return userPresences.find(presence => presence.token === window.userToken)
   },
 }
