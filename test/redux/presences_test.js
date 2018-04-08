@@ -2,7 +2,6 @@ import deepFreeze from "deep-freeze"
 import {
   reducer as presencesReducer,
   actions as actionCreators,
-  selectors,
 } from "../../web/static/js/redux/presences"
 
 describe("presences reducer", () => {
@@ -173,60 +172,6 @@ describe("presences reducer", () => {
 
     it("should update user with matching token with new attributes", () => {
       expect(newState).to.deep.equal([{ token: "abc123", name: "Tiny Rick", age: 70 }, { token: "zzz444", name: "Morty", age: 15 }])
-    })
-  })
-})
-
-describe("selectors", () => {
-  describe("findCurrentUser", () => {
-    const state = {
-      facilitatorId: 99,
-      presences: [{
-        id: 99,
-        token: "123",
-      }, {
-        id: 101,
-        token: "83jdkdkd83",
-      }],
-    }
-
-    window.userToken = "123"
-
-    it("finds the user whose token matches the window's `userToken`", () => {
-      expect(selectors.findCurrentUser(state).token).to.deep.equal("123")
-    })
-
-    describe("when the facilitatorId on state matches the id of the current user", () => {
-      it("labels that user as the facilitator", () => {
-        expect(selectors.findCurrentUser(state)).to.deep.equal({
-          id: 99,
-          token: "123",
-          is_facilitator: true,
-        })
-      })
-    })
-
-    describe("when the facilitatorId on state does *not* match the id of the current user", () => {
-      it("explicitly labels that user a non-facilitator", () => {
-        const state = {
-          facilitatorId: 5,
-          presences: [{
-            id: 99,
-            token: "123",
-          }, {
-            id: 101,
-            token: "83jdkdkd83",
-          }],
-        }
-
-        window.userToken = "123"
-
-        expect(selectors.findCurrentUser(state)).to.deep.equal({
-          id: 99,
-          token: "123",
-          is_facilitator: false,
-        })
-      })
     })
   })
 })
