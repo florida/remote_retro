@@ -69,7 +69,7 @@ describe("presences reducer", () => {
 
   describe("when action is SYNC_PRESENCE_DIFF", () => {
     describe("and the presence diff represents presences joining", () => {
-      context("when the user is not already tracked in the presences list", () => {
+      context("when the new presences is *not already tracked* in the presences list", () => {
         const presenceDiff = {
           joins: {
             ABC: { user: { id: 3, name: "Kevin", online_at: 10, token: "ABC" } },
@@ -106,10 +106,10 @@ describe("presences reducer", () => {
         })
       })
 
-      context("and the presences is already tracked in the presences list", () => {
+      context("and the joining presences is *already tracked* in the presences list", () => {
         const presenceDiff = {
           joins: {
-            ABC: { user: { name: "Kevin", online_at: 10, token: "ABC" } },
+            ABC: { user: { id: 5, name: "Kevin", online_at: 10, token: "ABC" } },
           },
           leaves: {},
         }
@@ -119,12 +119,13 @@ describe("presences reducer", () => {
         const action = { type: "SYNC_PRESENCE_DIFF", presenceDiff }
 
         it("does not add a duplicate to the presences list", () => {
-          const presencessListAlreadyContainingUser = [{ token: "ABC", name: "Kevin", online_at: 10 }]
-          const tokens = presencesReducer(
-            presencessListAlreadyContainingUser,
+          const presencesListAlreadyContainingUser = [{ token: "ABC", online_at: 10, user_id: 5 }]
+          const updatedPresencesList = presencesReducer(
+            presencesListAlreadyContainingUser,
             action
-          ).map(presence => presence.token)
-          expect(tokens).to.eql(["ABC"])
+          )
+
+          expect(updatedPresencesList).to.eql([{ token: "ABC", online_at: 10, user_id: 5 }])
         })
       })
     })

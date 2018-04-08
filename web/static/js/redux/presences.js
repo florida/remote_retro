@@ -25,7 +25,7 @@ const addArrivals = (existingUsers, arrivals) => {
     !existingUsers.find(u => presence.token === u.token)
   )
 
-  return [...existingUsers, ...newUsers]
+  return [...existingUsers, ...normalizePresencesWithForeignKeyForUsers(newUsers)]
 }
 
 const removeDepartures = (presences, departures) => {
@@ -49,8 +49,7 @@ export const reducer = (state = [], action) => {
     case "SYNC_PRESENCE_DIFF": {
       const { presenceDiff: { joins, leaves } } = action
       const withArrivalsAdded = addArrivals(state, joins)
-      const withDeparturesRemoved = removeDepartures(withArrivalsAdded, leaves)
-      return normalizePresencesWithForeignKeyForUsers(withDeparturesRemoved)
+      return removeDepartures(withArrivalsAdded, leaves)
     }
     case "UPDATE_PRESENCE": {
       const { presenceToken, newAttributes } = action
