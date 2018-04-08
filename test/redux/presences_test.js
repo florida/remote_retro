@@ -45,7 +45,7 @@ describe("presences reducer", () => {
 
       // remainder of attributes are persisted on the user model
       // the attributes we keep are either a foreign key to the user_model or ephemeral presence attributes
-      it("excludes attributes other than user_id, token, online_at, and is_facilitator", () => {
+      it("excludes attributes other than user_id, token, online_at", () => {
         const newState = presencesReducer([], action)
         const examplePresence = newState[0]
         const presenceAttributesSorted = Object.keys(examplePresence).sort()
